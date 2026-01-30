@@ -204,29 +204,6 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 - Configure `ALLOWED_ORIGINS` for your frontend domain
 - Use managed PostgreSQL (AWS RDS, DigitalOcean, etc.)
 
-## Interview Talking Points
-
-### Architecture Decisions
-
-- **Layered Architecture**: Routes → Services → Repositories for clean separation
-- **Provider Abstraction**: `EmbeddingProvider` interface allows swapping OpenAI for other providers
-- **Graceful Degradation**: App runs without OpenAI key (CRUD works, AI features return safe errors)
-- **Dependency Injection**: FastAPI's DI system for testability and clean code
-
-### Production Readiness
-
-- **Structured Logging**: JSON logs for monitoring tools (Datadog, CloudWatch)
-- **Error Handling**: Custom exceptions with proper HTTP status codes
-- **Security**: JWT tokens, bcrypt password hashing, CORS configuration
-- **Testing**: Integration tests with isolated test database
-- **Migrations**: Alembic for reproducible schema changes
-
-### Scalability Considerations
-
-- **Connection Pooling**: SQLAlchemy pool (5 base + 10 overflow)
-- **Vector Indexing**: pgvector HNSW index for fast similarity search
-- **Pagination**: All list endpoints support skip/limit
-- **Batch Embeddings**: Process multiple notes in one API call
 
 ## License
 
