@@ -1,6 +1,5 @@
 import pytest
 import os
-import tempfile
 from pathlib import Path
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, event
@@ -16,15 +15,33 @@ from app.models.user import User
 from app.main import app
 
 
-@pytest.fixture(scope="function")
-def db_session():
-    """Create a fresh database file for each test."""
-    # Create a temporary database file
-    db_file = Path("./test_temp.db")
+@pytest.fixture(scope="function", autouse=True)
+def cleanup_db():
+    """Clean up database file and dispose module-level engine before each test."""
+    import app.database as db_module
     
-    # Remove if exists
+    # Dispose the module-level engine to close all connections
+    db_module.engine.dispose()
+    
+    # Clean up any existing database file
+    db_file = Path("./test_temp.db")
     if db_file.exists():
         db_file.unlink()
+    
+    yield
+    
+    # Clean up after test
+    db_module.engine.dispose()
+    if db_file.exists():
+        db_file.unlink()
+
+
+@pytest.fixture(scope="function")
+def db_session(cleanup_db):
+    """Create a fresh database for each test."""
+    import app.database as db_module
+    
+    db_file = Path("./test_temp.db")
     
     # Create engine with file-based SQLite
     engine = create_engine(
@@ -43,6 +60,10 @@ def db_session():
     # Create all tables
     Base.metadata.create_all(bind=engine)
     
+    # Replace the module-level engine temporarily
+    original_engine = db_module.engine
+    db_module.engine = engine
+    
     # Create session
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     session = SessionLocal()
@@ -53,9 +74,8 @@ def db_session():
     session.close()
     engine.dispose()
     
-    # Delete the database file
-    if db_file.exists():
-        db_file.unlink()
+    # Restore original engine
+    db_module.engine = original_engine
 
 
 @pytest.fixture(scope="function")
