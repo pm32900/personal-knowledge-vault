@@ -2,14 +2,24 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 from sqlalchemy.pool import StaticPool
 from app.config import settings
+import os
 
-engine = create_engine(
-    settings.DATABASE_URL,
-    echo=settings.DATABASE_ECHO,
-    pool_pre_ping=True,
-    pool_size=5,
-    max_overflow=10
-)
+# Use different engine configuration for SQLite (tests) vs PostgreSQL (production)
+if settings.DATABASE_URL.startswith("sqlite"):
+    engine = create_engine(
+        settings.DATABASE_URL,
+        echo=settings.DATABASE_ECHO,
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool
+    )
+else:
+    engine = create_engine(
+        settings.DATABASE_URL,
+        echo=settings.DATABASE_ECHO,
+        pool_pre_ping=True,
+        pool_size=5,
+        max_overflow=10
+    )
 
 SessionLocal = sessionmaker(
     autocommit=False,
