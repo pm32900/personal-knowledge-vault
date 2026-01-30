@@ -26,9 +26,15 @@ def get_db() -> Session:
         db.close()
 
 def init_db() -> None:
+    import os
     from sqlalchemy import text
     import logging
     logger = logging.getLogger(__name__)
+    
+    # Skip database initialization during tests
+    if os.getenv("ENVIRONMENT") == "testing":
+        logger.info("Skipping database initialization in test environment")
+        return
 
     try:
         with engine.connect() as conn:

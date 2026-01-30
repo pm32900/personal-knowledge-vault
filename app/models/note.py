@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, ARRAY
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 # from pgvector.sqlalchemy import Vector  # Temporarily disabled until pgvector is installed
 from datetime import datetime
@@ -12,7 +12,7 @@ class Note(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, nullable=False, index=True)
     content = Column(Text, nullable=False)
-    tags = Column(ARRAY(String), default=list)
+    tags = Column(JSON, default=list)
     
     # Vector embedding for semantic search
     # embedding = Column(Vector(settings.VECTOR_DIMENSIONS), nullable=True)  # Temporarily disabled
