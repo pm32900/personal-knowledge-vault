@@ -183,26 +183,220 @@ pytest --cov=app --cov-report=html
 pytest tests/test_auth.py -v
 ```
 
-## Deployment
+## Demo
 
-### Docker (Recommended)
+> **Note**: A demo GIF/video will be added here showing the complete workflow
 
-```dockerfile
-FROM python:3.12-slim
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+To run the demo script:
+
+```bash
+# Start the server first
+uvicorn app.main:app --reload
+
+# In another terminal, run the demo
+./scripts/demo.sh
 ```
 
-### Environment Variables for Production
+The demo showcases:
+1. User registration and authentication
+2. Creating notes about machine learning
+3. Semantic search with similarity scores
+4. RAG-based question answering with citations
+5. CRUD operations (update, delete)
+
+### Recording a Demo
+
+```bash
+# Install asciinema and agg
+brew install asciinema
+cargo install --git https://github.com/asciinema/agg
+
+# Record the demo
+asciinema rec demo.cast
+./scripts/demo.sh
+exit
+
+# Convert to GIF
+agg demo.cast demo.gif
+```
+
+## Docker Deployment
+
+### Quick Start with Docker Compose
+
+The easiest way to run the entire stack (API + PostgreSQL with pgvector):
+
+```bash
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f api
+
+# Stop all services
+docker-compose down
+```
+
+This starts:
+- PostgreSQL 17 with pgvector extension on port 5432
+- FastAPI application on port 8000
+
+### Environment Configuration
+
+Create a `.env` file in the project root:
+
+```bash
+SECRET_KEY=your-generated-secret-key-here
+OPENAI_API_KEY=sk-your-openai-key
+ENVIRONMENT=production
+DEBUG=false
+ALLOWED_ORIGINS=https://yourdomain.com
+```
+
+### Manual Docker Build
+
+```bash
+# Build the image
+docker build -t knowledge-vault:latest .
+
+# Run with external PostgreSQL
+docker run -d \
+  -p 8000:8000 \
+  -e DATABASE_URL=postgresql://user:pass@host:5432/db \
+  -e SECRET_KEY=your-secret-key \
+  -e OPENAI_API_KEY=sk-your-key \
+  knowledge-vault:latest
+```
+
+### Production Deployment
+
+For production deployments:
 
 - Set `ENVIRONMENT=production`
-- Use strong `SECRET_KEY` (32+ characters)
+- Use strong `SECRET_KEY` (generate with `openssl rand -hex 32`)
 - Set `DEBUG=false`
 - Configure `ALLOWED_ORIGINS` for your frontend domain
-- Use managed PostgreSQL (AWS RDS, DigitalOcean, etc.)
+- Use managed PostgreSQL (AWS RDS, DigitalOcean, Render, etc.)
+- Enable HTTPS/TLS
+- Set up monitoring and logging aggregation
+
+## Evaluation
+
+This project includes a comprehensive evaluation framework for measuring RAG system performance.
+
+### Metrics
+
+- **Precision@K**: Fraction of retrieved notes that are relevant
+- **Recall@K**: Fraction of relevant notes that were retrieved
+- **Mean Reciprocal Rank (MRR)**: Quality of ranking
+- **Latency**: Average query response time in milliseconds
+
+### Running Evaluation
+
+```bash
+# Create evaluation dataset (see data/eval_queries.json)
+# Then run evaluation
+python scripts/evaluate_rag.py --dataset data/eval_queries.json --k 5
+```
+
+### Sample Results
+
+Example evaluation on a test dataset of 50 queries:
+
+| Metric | Value |
+|--------|-------|
+| Precision@5 | 0.8400 |
+| Recall@5 | 0.7200 |
+| MRR | 0.8950 |
+| Avg Latency | 145.32 ms |
+
+### Creating Evaluation Datasets
+
+Format for `data/eval_queries.json`:
+
+```json
+[
+  {
+    "query": "What are neural networks?",
+    "relevant_note_ids": [1, 3, 5],
+    "description": "Query about ML fundamentals"
+  }
+]
+```
+
+See `data/README.md` for detailed instructions.
+
+## Continuous Integration
+
+This project uses GitHub Actions for automated testing on every push and pull request.
+
+### CI Pipeline
+
+- **Linting**: Flake8 for code quality
+- **Testing**: pytest with coverage reporting
+- **Docker Build**: Validates Docker image builds
+- **Coverage**: Automatic upload to Codecov
+
+### Running Locally
+
+```bash
+# Run linting
+flake8 app --count --select=E9,F63,F7,F82 --show-source --statistics
+
+# Run tests with coverage
+pytest tests/ --cov=app --cov-report=term --cov-report=html
+
+# View coverage report
+open htmlcov/index.html
+```
+
+### CI Status
+
+[![CI](https://github.com/pm32900/personal-knowledge-vault/actions/workflows/ci.yml/badge.svg)](https://github.com/pm32900/personal-knowledge-vault/actions/workflows/ci.yml)
+
+## Known Limitations & Roadmap
+
+### Current Limitations
+
+- **Embedding Provider**: Currently locked to OpenAI embeddings
+  - No support for local models (Sentence Transformers, etc.)
+  - No fallback if OpenAI rate limits are hit
+- **Retrieval**: Basic cosine similarity only
+  - No reranking step
+  - No hybrid search (keyword + semantic)
+- **Caching**: No embedding or response caching
+  - Repeated queries regenerate embeddings
+  - LLM responses not cached
+- **Scalability**: Single-instance deployment
+  - No horizontal scaling support yet
+  - No distributed vector index
+
+### Roadmap
+
+**Phase 1: Provider Flexibility** (Q2 2026)
+- [ ] Abstract embedding provider interface
+- [ ] Add Sentence Transformers support
+- [ ] Add Cohere embeddings support
+- [ ] Implement provider fallback chain
+
+**Phase 2: Retrieval Improvements** (Q2 2026)
+- [ ] Add reranking with cross-encoder models
+- [ ] Implement hybrid search (BM25 + vector)
+- [ ] Add query expansion techniques
+- [ ] Support for multi-vector retrieval
+
+**Phase 3: Performance & Scale** (Q3 2026)
+- [ ] Redis caching for embeddings and responses
+- [ ] Async embedding generation with Celery
+- [ ] Horizontal scaling with load balancer
+- [ ] Migration to dedicated vector DB (Qdrant/Weaviate)
+
+**Phase 4: Advanced Features** (Q3-Q4 2026)
+- [ ] Multi-modal support (images, PDFs)
+- [ ] Collaborative note sharing
+- [ ] Real-time updates with WebSockets
+- [ ] Advanced analytics dashboard
+- [ ] Fine-tuned retrieval models
 
 
 ## License

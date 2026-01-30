@@ -1,0 +1,27 @@
+[
+  {
+    "query": "What are neural networks?",
+    "relevant_note_ids": [1, 3, 5],
+    "description": "Query about machine learning fundamentals"
+  },
+  {
+    "query": "How does backpropagation work?",
+    "relevant_note_ids": [1, 5],
+    "description": "Query about training algorithms"
+  },
+  {
+    "query": "What is the difference between supervised and unsupervised learning?",
+    "relevant_note_ids": [2, 4],
+    "description": "Query about learning paradigms"
+  },
+  {
+    "query": "Explain gradient descent optimization",
+    "relevant_note_ids": [1, 5, 7],
+    "description": "Query about optimization techniques"
+  },
+  {
+    "query": "What are convolutional neural networks used for?",
+    "relevant_note_ids": [3, 6],
+    "description": "Query about CNN applications"
+  }
+]
