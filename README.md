@@ -371,32 +371,6 @@ open htmlcov/index.html
   - No horizontal scaling support yet
   - No distributed vector index
 
-### Roadmap
-
-**Phase 1: Provider Flexibility** (Q2 2026)
-- [ ] Abstract embedding provider interface
-- [ ] Add Sentence Transformers support
-- [ ] Add Cohere embeddings support
-- [ ] Implement provider fallback chain
-
-**Phase 2: Retrieval Improvements** (Q2 2026)
-- [ ] Add reranking with cross-encoder models
-- [ ] Implement hybrid search (BM25 + vector)
-- [ ] Add query expansion techniques
-- [ ] Support for multi-vector retrieval
-
-**Phase 3: Performance & Scale** (Q3 2026)
-- [ ] Redis caching for embeddings and responses
-- [ ] Async embedding generation with Celery
-- [ ] Horizontal scaling with load balancer
-- [ ] Migration to dedicated vector DB (Qdrant/Weaviate)
-
-**Phase 4: Advanced Features** (Q3-Q4 2026)
-- [ ] Multi-modal support (images, PDFs)
-- [ ] Collaborative note sharing
-- [ ] Real-time updates with WebSockets
-- [ ] Advanced analytics dashboard
-- [ ] Fine-tuned retrieval models
 
 
 ## License
