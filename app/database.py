@@ -2,7 +2,6 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 from sqlalchemy.pool import StaticPool
 from app.config import settings
-from app.models import note
 
 engine = create_engine(
     settings.DATABASE_URL,
@@ -28,10 +27,16 @@ def get_db() -> Session:
 
 def init_db() -> None:
     from sqlalchemy import text
+    import logging
+    logger = logging.getLogger(__name__)
 
-    with engine.connect() as conn:
-        conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
-        conn.commit()
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
+            conn.commit()
+            logger.info("pgvector extension created successfully")
+    except Exception as e:
+        logger.warning(f"Could not create pgvector extension: {e}. Vector search features will be disabled.")
 
     from app.models import user, note
 

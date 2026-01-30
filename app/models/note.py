@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, ARRAY
 from sqlalchemy.orm import relationship
-from pgvector.sqlalchemy import Vector
+# from pgvector.sqlalchemy import Vector  # Temporarily disabled until pgvector is installed
 from datetime import datetime
 from app.database import Base
 from app.config import settings
@@ -15,7 +15,7 @@ class Note(Base):
     tags = Column(ARRAY(String), default=list)
     
     # Vector embedding for semantic search
-    embedding = Column(Vector(settings.VECTOR_DIMENSIONS), nullable=True)
+    # embedding = Column(Vector(settings.VECTOR_DIMENSIONS), nullable=True)  # Temporarily disabled
     
     # Foreign key to user
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
