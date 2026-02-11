@@ -30,16 +30,15 @@ def create_note(db: Session, note_data: NoteCreate, user: User) -> Note:
         user_id=user.id
     )
     
-    # Generate embedding
-    try:
-        embedding_service = get_embedding_service()
-        combined_text = f"{note_data.title}\n{note_data.content}"
-        embedding = embedding_service.embed_text(combined_text)
-        note.embedding = embedding
-        logger.info("embedding_generated", note_title=note_data.title)
-    except AIServiceError as e:
-        logger.warning("embedding_failed", error=str(e), note_title=note_data.title)
-        # Note is still created without embedding
+    # Generate embedding (disabled until pgvector is installed)
+    # try:
+    #     embedding_service = get_embedding_service()
+    #     combined_text = f"{note_data.title}\n{note_data.content}"
+    #     embedding = embedding_service.embed_text(combined_text)
+    #     note.embedding = embedding
+    #     logger.info("embedding_generated", note_title=note_data.title)
+    # except AIServiceError as e:
+    #     logger.warning("embedding_failed", error=str(e), note_title=note_data.title)
     
     db.add(note)
     db.commit()
@@ -129,16 +128,16 @@ def update_note(db: Session, note_id: int, note_data: NoteUpdate, user: User) ->
     if note_data.tags is not None:
         note.tags = note_data.tags
     
-    # Regenerate embedding if content changed
-    if content_changed:
-        try:
-            embedding_service = get_embedding_service()
-            combined_text = f"{note.title}\n{note.content}"
-            embedding = embedding_service.embed_text(combined_text)
-            note.embedding = embedding
-            logger.info("embedding_regenerated", note_id=note.id)
-        except AIServiceError as e:
-            logger.warning("embedding_regeneration_failed", error=str(e), note_id=note.id)
+    # Regenerate embedding if content changed (disabled until pgvector is installed)
+    # if content_changed:
+    #     try:
+    #         embedding_service = get_embedding_service()
+    #         combined_text = f"{note.title}\n{note.content}"
+    #         embedding = embedding_service.embed_text(combined_text)
+    #         note.embedding = embedding
+    #         logger.info("embedding_regenerated", note_id=note.id)
+    #     except AIServiceError as e:
+    #         logger.warning("embedding_regeneration_failed", error=str(e), note_id=note.id)
     
     db.commit()
     db.refresh(note)

@@ -19,7 +19,7 @@ def semantic_search(
     top_k: int = None
 ) -> List[Dict[str, Any]]:
     """
-    Perform semantic search on user's notes.
+    Search user's notes. Uses text matching as fallback when pgvector is unavailable.
     
     Args:
         db: Database session
@@ -33,57 +33,44 @@ def semantic_search(
     if top_k is None:
         top_k = settings.TOP_K_RESULTS
     
-    # Generate query embedding
-    try:
-        embedding_service = get_embedding_service()
-        query_embedding = embedding_service.embed_text(query)
-    except AIServiceError as e:
-        logger.error("query_embedding_failed", error=str(e))
-        raise AIServiceError("Failed to process search query")
+    # Text-based search fallback (pgvector not installed)
+    # Search by keyword matching in title and content
+    query_lower = query.lower()
+    keywords = [kw.strip() for kw in query_lower.split() if len(kw.strip()) > 2]
     
-    # Perform vector similarity search
-    # Using cosine similarity: 1 - (embedding <=> query_embedding)
-    sql = text("""
-        SELECT 
-            id,
-            title,
-            content,
-            tags,
-            user_id,
-            created_at,
-            updated_at,
-            1 - (embedding <=> :query_embedding) as similarity
-        FROM notes
-        WHERE user_id = :user_id
-        AND embedding IS NOT NULL
-        ORDER BY embedding <=> :query_embedding
-        LIMIT :top_k
-    """)
+    notes = db.query(Note)\
+        .filter(Note.user_id == user.id)\
+        .order_by(Note.updated_at.desc())\
+        .limit(top_k * 3)\
+        .all()
     
-    result = db.execute(
-        sql,
-        {
-            "query_embedding": str(query_embedding),
-            "user_id": user.id,
-            "top_k": top_k
-        }
-    )
+    scored_notes = []
+    for note in notes:
+        text_blob = f"{note.title} {note.content}".lower()
+        matches = sum(1 for kw in keywords if kw in text_blob)
+        if matches > 0 or not keywords:
+            score = matches / max(len(keywords), 1)
+            scored_notes.append((note, score))
+    
+    # Sort by score descending, take top_k
+    scored_notes.sort(key=lambda x: x[1], reverse=True)
+    scored_notes = scored_notes[:top_k]
     
     results = []
-    for row in result:
-        # Create excerpt (first 200 chars of content)
-        excerpt = row.content[:200] + "..." if len(row.content) > 200 else row.content
-        
+    for note, score in scored_notes:
+        excerpt = note.content[:200] + "..." if len(note.content) > 200 else note.content
         results.append({
-            "note_id": row.id,
-            "title": row.title,
-            "content": row.content,
-            "tags": row.tags,
-            "similarity": float(row.similarity),
-            "excerpt": excerpt
+            "note_id": note.id,
+            "title": note.title,
+            "content": note.content,
+            "tags": note.tags or [],
+            "similarity": min(score, 1.0),
+            "excerpt": excerpt,
+            "created_at": note.created_at,
+            "updated_at": note.updated_at,
         })
     
-    logger.info("semantic_search", user_id=user.id, query=query, results_count=len(results))
+    logger.info("text_search", user_id=user.id, query=query, results_count=len(results))
     return results
 
 
