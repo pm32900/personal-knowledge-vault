@@ -1,14 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from '@/context/AuthContext';
-import ProtectedRoute from '@/components/ProtectedRoute';
-import Layout from '@/components/Layout';
-import LoginPage from '@/pages/LoginPage';
-import RegisterPage from '@/pages/RegisterPage';
-import NotesListPage from '@/pages/NotesListPage';
-import NoteEditorPage from '@/pages/NoteEditorPage';
-import NoteViewPage from '@/pages/NoteViewPage';
-import SearchPage from '@/pages/SearchPage';
-import AskPage from '@/pages/AskPage';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Layout from './components/Layout';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import NotesListPage from './pages/NotesListPage';
+import NoteEditorPage from './pages/NoteEditorPage';
+import NoteViewPage from './pages/NoteViewPage';
+import SearchPage from './pages/SearchPage';
+import AskPage from './pages/AskPage';
 
 export default function App() {
   return (

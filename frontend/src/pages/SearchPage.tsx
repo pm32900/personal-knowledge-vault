@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { searchApi } from '@/lib/api';
-import type { NoteSearchResult } from '@/types';
+import { searchApi } from '../lib/api';
+import type { NoteSearchResult } from '../types';
 import { Search, Loader2, FileText, Tag } from 'lucide-react';
 
 export default function SearchPage() {

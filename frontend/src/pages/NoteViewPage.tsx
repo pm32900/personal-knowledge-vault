@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { notesApi } from '@/lib/api';
-import type { Note } from '@/types';
+import { notesApi } from '../lib/api';
+import type { Note } from '../types';
 import { Loader2, ArrowLeft, Pencil, Trash2, Tag, Clock } from 'lucide-react';
 
 export default function NoteViewPage() {

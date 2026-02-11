@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ragApi } from '@/lib/api';
-import type { RAGResponse } from '@/types';
+import { ragApi } from '../lib/api';
+import type { RAGResponse } from '../types';
 import { MessageSquare, Loader2, Send, BookOpen, Sparkles } from 'lucide-react';
 
 export default function AskPage() {

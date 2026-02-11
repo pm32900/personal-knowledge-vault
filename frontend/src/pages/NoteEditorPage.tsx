@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { notesApi } from '@/lib/api';
+import { notesApi } from '../lib/api';
 import { Loader2, Save, ArrowLeft, X } from 'lucide-react';
 
 export default function NoteEditorPage() {

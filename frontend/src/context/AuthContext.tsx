@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { authApi } from '@/lib/api';
+import { authApi } from '../lib/api';
 
 interface AuthContextType {
   token: string | null;
