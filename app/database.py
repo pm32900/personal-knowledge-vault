@@ -4,17 +4,22 @@ from sqlalchemy.pool import StaticPool
 from app.config import settings
 import os
 
+# Render uses postgres:// but SQLAlchemy requires postgresql://
+database_url = settings.DATABASE_URL
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+
 # Use different engine configuration for SQLite (tests) vs PostgreSQL (production)
-if settings.DATABASE_URL.startswith("sqlite"):
+if database_url.startswith("sqlite"):
     engine = create_engine(
-        settings.DATABASE_URL,
+        database_url,
         echo=settings.DATABASE_ECHO,
         connect_args={"check_same_thread": False},
         poolclass=StaticPool
     )
 else:
     engine = create_engine(
-        settings.DATABASE_URL,
+        database_url,
         echo=settings.DATABASE_ECHO,
         pool_pre_ping=True,
         pool_size=5,
