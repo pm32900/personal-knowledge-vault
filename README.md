@@ -2,6 +2,14 @@
 
 A production-grade RAG (Retrieval-Augmented Generation) application for managing personal notes with AI-powered semantic search and question answering.
 
+## Live Demo
+
+- **Frontend App**: [https://knowledge-vault-frontend.onrender.com](https://knowledge-vault-frontend.onrender.com)
+- **Backend API**: [https://knowledge-vault-api.onrender.com](https://knowledge-vault-api.onrender.com)
+- **API Docs (Swagger)**: [https://knowledge-vault-api.onrender.com/docs](https://knowledge-vault-api.onrender.com/docs)
+
+> **Note**: Render free tier services spin down after 15 min of inactivity. The first request may take ~30 seconds to wake up.
+
 ## Features
 
 - **Authentication**: JWT-based email/password authentication
