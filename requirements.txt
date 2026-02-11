@@ -9,7 +9,7 @@ python-multipart==0.0.6
 sqlalchemy==2.0.25
 alembic==1.13.1
 psycopg2-binary==2.9.9
-pgvector==0.2.4
+# pgvector==0.2.4  # Disabled until pgvector extension is available
 
 # Authentication & Security
 python-jose[cryptography]==3.3.0
@@ -31,5 +31,4 @@ structlog==24.1.0
 pytest==7.4.4
 pytest-asyncio==0.23.3
 pytest-cov==4.1.0
-httpx==0.26.0
 faker==22.6.0
