@@ -1,6 +1,6 @@
 # Personal Knowledge Vault
 
-A production-grade RAG (Retrieval-Augmented Generation) application for managing personal notes with AI-powered semantic search and question answering.
+A deployment-oriented RAG (Retrieval-Augmented Generation) service for managing personal notes with semantic search and question answering, built with production-minded engineering practices.
 
 ## Live Demo
 
@@ -17,7 +17,14 @@ A production-grade RAG (Retrieval-Augmented Generation) application for managing
 - **Semantic Search**: Vector similarity search using pgvector
 - **RAG Q&A**: Ask questions about your notes and get AI-generated answers with citations
 - **Automatic Embeddings**: Notes are automatically vectorized using OpenAI embeddings
-- **Production Ready**: Structured logging, error handling, tests, migrations
+- **Engineering practices**: Structured logging, error handling, tests, migrations, CI
+
+
+## Known limitations
+
+- Retrieval is cosine similarity only; no reranking or hybrid search
+- Embeddings are tied to OpenAI; no local-model fallback
+- No caching layer or horizontal scaling
 
 ## Tech Stack
 
